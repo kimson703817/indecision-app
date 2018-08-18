@@ -6,27 +6,9 @@ class IndecisionApp extends React.Component {
         this.handleAddOption = this.handleAddOption.bind(this);
 
         this.state = {
-            options: ['yoshino', 'hiromi', 'yuka']
+            options: []
         };
     };
-
-    // handlePick
-    handlePick() {
-        alert(this.state.options[Math.floor(Math.random()* this.state.options.length)]);
-    };
-
-    // handleDeleteOptions
-    handleDeleteOptions() {
-        this.setState(() => {
-            return {
-                options: []
-            };
-        });
-    };
-
-    handleAddOption() {
-        console.log(option);
-    }
 
     render() {
         const title = 'Indecision';
@@ -46,9 +28,39 @@ class IndecisionApp extends React.Component {
                     options={this.state.options}
                     handleDeleteOptions={this.handleDeleteOptions}    
                 />
-                <AddOption />
+                <AddOption
+                    handleAddOption={this.handleAddOption}
+                />
             </div>
         );
+    };
+
+    // handlePick
+    handlePick() {
+        alert(this.state.options[Math.floor(Math.random()* this.state.options.length)]);
+    };
+
+    // handleDeleteOptions
+    handleDeleteOptions() {
+        this.setState(() => {
+            return {
+                options: []
+            };
+        });
+    };
+
+    handleAddOption(option) {
+        if(!option) {
+            return 'Enter valid value to add item';
+        } else if(this.state.options.indexOf(option) > -1) {
+            return 'This option already exists';
+        }
+
+        this.setState((outdated) => {
+            return {
+                options: outdated.options.concat(option)
+            };
+        });
     };
 };
 
@@ -99,19 +111,25 @@ class AddOption extends React.Component {
     constructor(props) {
         super(props);
         this.handleAddOption = this.handleAddOption.bind(this);
+        this.state = {
+            error: undefined
+        }
     };    
 
     handleAddOption(event) {
         event.preventDefault();
         const option = event.target.elements.option.value.trim();
 
-        if(option) {
-            alert('Yoshino kiss');
-        }
+        const error = this.props.handleAddOption(option);
+
+        this.setState(() => {
+            return { error };
+        });
     };
     render() {
         return (
             <div>
+                {this.state.error && <p>{this.state.error}</p>}
                 <form onSubmit={this.handleAddOption}>
                     <input type="text" name="option"/>
                     <button>Add Option</button>

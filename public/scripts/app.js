@@ -21,12 +21,38 @@ var IndecisionApp = function (_React$Component) {
         _this.handleAddOption = _this.handleAddOption.bind(_this);
 
         _this.state = {
-            options: ['yoshino', 'hiromi', 'yuka']
+            options: []
         };
         return _this;
     }
 
     _createClass(IndecisionApp, [{
+        key: 'render',
+        value: function render() {
+            var title = 'Indecision';
+            var subtitle = 'Put your life in the hands of a computer';
+
+            return React.createElement(
+                'div',
+                null,
+                React.createElement(Header, {
+                    title: title,
+                    subtitle: subtitle
+                }),
+                React.createElement(Action, {
+                    hasOptions: this.state.options.length,
+                    handlePick: this.handlePick
+                }),
+                React.createElement(Options, {
+                    options: this.state.options,
+                    handleDeleteOptions: this.handleDeleteOptions
+                }),
+                React.createElement(AddOption, {
+                    handleAddOption: this.handleAddOption
+                })
+            );
+        }
+    }, {
         key: 'handlePick',
 
 
@@ -48,32 +74,18 @@ var IndecisionApp = function (_React$Component) {
         }
     }, {
         key: 'handleAddOption',
-        value: function handleAddOption() {
-            console.log(option);
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var title = 'Indecision';
-            var subtitle = 'Put your life in the hands of a computer';
+        value: function handleAddOption(option) {
+            if (!option) {
+                return 'Enter valid value to add item';
+            } else if (this.state.options.indexOf(option) > -1) {
+                return 'This option already exists';
+            }
 
-            return React.createElement(
-                'div',
-                null,
-                React.createElement(Header, {
-                    title: title,
-                    subtitle: subtitle
-                }),
-                React.createElement(Action, {
-                    hasOptions: this.state.options.length,
-                    handlePick: this.handlePick
-                }),
-                React.createElement(Options, {
-                    options: this.state.options,
-                    handleDeleteOptions: this.handleDeleteOptions
-                }),
-                React.createElement(AddOption, null)
-            );
+            this.setState(function (outdated) {
+                return {
+                    options: outdated.options.concat(option)
+                };
+            });
         }
     }]);
 
@@ -189,6 +201,9 @@ var AddOption = function (_React$Component5) {
         var _this5 = _possibleConstructorReturn(this, (AddOption.__proto__ || Object.getPrototypeOf(AddOption)).call(this, props));
 
         _this5.handleAddOption = _this5.handleAddOption.bind(_this5);
+        _this5.state = {
+            error: undefined
+        };
         return _this5;
     }
 
@@ -198,9 +213,11 @@ var AddOption = function (_React$Component5) {
             event.preventDefault();
             var option = event.target.elements.option.value.trim();
 
-            if (option) {
-                alert('Yoshino kiss');
-            }
+            var error = this.props.handleAddOption(option);
+
+            this.setState(function () {
+                return { error: error };
+            });
         }
     }, {
         key: 'render',
@@ -208,6 +225,11 @@ var AddOption = function (_React$Component5) {
             return React.createElement(
                 'div',
                 null,
+                this.state.error && React.createElement(
+                    'p',
+                    null,
+                    this.state.error
+                ),
                 React.createElement(
                     'form',
                     { onSubmit: this.handleAddOption },
