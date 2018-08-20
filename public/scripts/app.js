@@ -22,12 +22,34 @@ var IndecisionApp = function (_React$Component) {
         _this.handleDeleteOption = _this.handleDeleteOption.bind(_this);
 
         _this.state = {
-            options: props.options
+            options: []
         };
         return _this;
     }
 
     _createClass(IndecisionApp, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            try {
+                var json = localStorage.getItem('options');
+                var options = JSON.parse(json);
+
+                if (options) {
+                    this.setState(function () {
+                        return { options: options };
+                    });
+                }
+            } catch (error) {}
+        }
+    }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate(prevProps, prevState) {
+            if (prevState.options.length !== this.state.options.length) {
+                var json = JSON.stringify(this.state.options);
+                localStorage.setItem('options', json);
+            }
+        }
+    }, {
         key: 'render',
         value: function render() {
             var title = 'Indecision';
@@ -94,10 +116,6 @@ var IndecisionApp = function (_React$Component) {
 
 ;
 
-IndecisionApp.defaultProps = {
-    options: []
-};
-
 var Header = function Header(props) {
     return React.createElement(
         'div',
@@ -142,6 +160,11 @@ var Options = function Options(props) {
             'button',
             { onClick: props.handleDeleteOptions },
             'Remove All'
+        ),
+        !props.options.length && React.createElement(
+            'p',
+            null,
+            'Please add an option to get started'
         ),
         props.options.map(function (option) {
             return React.createElement(Option, {
@@ -199,6 +222,10 @@ var AddOption = function (_React$Component2) {
             this.setState(function () {
                 return { error: error };
             });
+
+            if (!error) {
+                event.target.elements.option.value = '';
+            }
         }
     }, {
         key: 'render',
